@@ -17,6 +17,7 @@ export BOT_TOKEN="[discord bot token]"
 export BOT_MAP_DIR="[map directory]"
 export BOT_PREFIX="!"
 ```
+Source `.env` after making changes to it.
 
 ## Commands
 | Command              | Description                                                   |
