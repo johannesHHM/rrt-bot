@@ -43,9 +43,17 @@ func newMessage(discord *discordgo.Session, message *discordgo.MessageCreate) {
 		return
 	}
 	switch {
-	case strings.Contains(message.Content, BotPrefix + "upmap") && len(message.Attachments) > 0:	
+	case strings.Contains(message.Content, BotPrefix + "upmap"):
+		if len(message.Attachments) == 0 {
+			discord.ChannelMessageSend(message.ChannelID, "To uppload a map, include the map as an attachment")
+			break
+		}
 		names := downloadMaps(message.Attachments)
-		discord.ChannelMessageSend(message.ChannelID, "Successfully uploaded " + strings.Join(names, ", "))
+		if len(names) > 0 {
+			discord.ChannelMessageSend(message.ChannelID, "Successfully uploaded " + strings.Join(names, ", "))
+		} else {
+			discord.ChannelMessageSend(message.ChannelID, "Failed to upload attachment, is your attachment a map?")
+		}
 	case strings.Contains(message.Content, BotPrefix + "ping"):
 		discord.ChannelMessageSend(message.ChannelID, "pong!")	
 	}
