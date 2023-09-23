@@ -15,8 +15,12 @@ func main() {
 	if !ok {
 		log.Fatal("Env variable BOT_MAP_DIR not found")
 	}	
-	
+	botPrefix, ok := os.LookupEnv("BOT_PREFIX")
+	if !ok {
+		log.Fatal("Env variable BOT_PREFIX not found")
+	}
 	bot.BotToken = botToken
 	bot.BotMapDir = botMapDir
+	bot.BotPrefix = botPrefix
 	bot.Run()
 }

@@ -16,6 +16,7 @@ import (
 var (
 	BotToken string
 	BotMapDir string
+	BotPrefix string
 )
 
 func Run() { 
@@ -42,11 +43,11 @@ func newMessage(discord *discordgo.Session, message *discordgo.MessageCreate) {
 		return
 	}
 	switch {
-	case len(message.Attachments) > 0:	
+	case strings.Contains(message.Content, BotPrefix + "upmap") && len(message.Attachments) > 0:	
 		names := downloadMaps(message.Attachments)
 		discord.ChannelMessageSend(message.ChannelID, "Successfully uploaded " + strings.Join(names, ", "))
-	case strings.Contains(message.Content, "ping"):
-		discord.ChannelMessageSend(message.ChannelID, "pong !")	
+	case strings.Contains(message.Content, BotPrefix + "ping"):
+		discord.ChannelMessageSend(message.ChannelID, "pong!")	
 	}
 }
 
