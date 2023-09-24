@@ -45,35 +45,61 @@ func newMessage(discord *discordgo.Session, message *discordgo.MessageCreate) {
 	switch {
 	case strings.Contains(message.Content, BotPrefix + "upmap"):
 		if len(message.Attachments) == 0 {
-			discord.ChannelMessageSend(message.ChannelID, "To uppload a map, include the map as an attachment")
+			discord.ChannelMessageSend(message.ChannelID, "```To uppload a map, include the map as an attachment```")
 			break
 		}
 		names := downloadMaps(message.Attachments)
 		if len(names) > 0 {
-			discord.ChannelMessageSend(message.ChannelID, "Successfully uploaded:  " + strings.Join(names, "     "))
+			replyString := "```" +
+			"Successfully uploaded:\n" +
+			strings.Join(names, "     ") +
+			"```"
+			discord.ChannelMessageSend(message.ChannelID, replyString)
 		} else {
-			discord.ChannelMessageSend(message.ChannelID, "Failed to upload attachment, is your attachment a map?")
+			discord.ChannelMessageSend(message.ChannelID, "```Failed to upload attachment, is your attachment a map?```")
 		}
 
 	case strings.Contains(message.Content, BotPrefix + "ping"):
-		discord.ChannelMessageSend(message.ChannelID, "pong!")
+		discord.ChannelMessageSend(message.ChannelID, "```pong!```")
 
 	case strings.Contains(message.Content, BotPrefix + "lsmap"):
 		names := getMapsList(-1)
 		if len(names) > 0 {
-		discord.ChannelMessageSend(message.ChannelID, "Maps:  " + strings.Join(names, "     "))
+			replyString := "```" +
+			"Maps:\n" +
+			strings.Join(names, "     ") +
+			"```"
+			discord.ChannelMessageSend(message.ChannelID, replyString)
 		} else {
-			discord.ChannelMessageSend(message.ChannelID, "There are no maps in map dir")
+			discord.ChannelMessageSend(message.ChannelID, "```There are no maps in map dir```")
 		}
 	
 	case strings.Contains(message.Content, BotPrefix + "rmmap"):
 		successNames, failureNames := removeMaps(message.Content)
 		if len(successNames) > 0 {
-			discord.ChannelMessageSend(message.ChannelID, "Successfully removed:  " + strings.Join(successNames, "     "))
+			replyString := "```" +
+			"Successfully removed:\n" +
+			strings.Join(successNames, "     ") +
+			"```"
+			discord.ChannelMessageSend(message.ChannelID, replyString)
 		}
 		if len(failureNames) > 0 {
-			discord.ChannelMessageSend(message.ChannelID, "Failed to remove:  " + strings.Join(failureNames, "     "))
-		}	
+			replyString := "```" +
+			"Failed to remove:\n" +
+			strings.Join(failureNames, "     ") +
+			"```"
+			discord.ChannelMessageSend(message.ChannelID, replyString)
+		}		
+	case strings.Contains(message.Content, BotPrefix + "help"):
+		helpString := 
+		"```" +
+		"Commands:\n" +
+		"!upmap [map files]   uploads all given maps\n" +
+		"!lsmap               lists all maps\n" +
+		"!rmmap [map names]   removes given maps\n" +
+		"!ping                pongs\n" +
+		"```"
+		discord.ChannelMessageSend(message.ChannelID, helpString)
 	}
 }
 
