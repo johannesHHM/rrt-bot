@@ -38,10 +38,10 @@ func Run() {
 	<-c
 }
 
-func newMessage(discord *discordgo.Session, message *discordgo.MessageCreate) {
+func newMessage(discord *discordgo.Session, message *discordgo.MessageCreate) {	
 	if message.Author.ID == discord.State.User.ID {
 		return
-	}
+	}	
 	switch {
 	case strings.Contains(message.Content, BotPrefix + "upmap"):
 		if len(message.Attachments) == 0 {
@@ -50,12 +50,30 @@ func newMessage(discord *discordgo.Session, message *discordgo.MessageCreate) {
 		}
 		names := downloadMaps(message.Attachments)
 		if len(names) > 0 {
-			discord.ChannelMessageSend(message.ChannelID, "Successfully uploaded " + strings.Join(names, ", "))
+			discord.ChannelMessageSend(message.ChannelID, "Successfully uploaded:  " + strings.Join(names, "     "))
 		} else {
 			discord.ChannelMessageSend(message.ChannelID, "Failed to upload attachment, is your attachment a map?")
 		}
+
 	case strings.Contains(message.Content, BotPrefix + "ping"):
-		discord.ChannelMessageSend(message.ChannelID, "pong!")	
+		discord.ChannelMessageSend(message.ChannelID, "pong!")
+
+	case strings.Contains(message.Content, BotPrefix + "lsmap"):
+		names := getMapsList(-1)
+		if len(names) > 0 {
+		discord.ChannelMessageSend(message.ChannelID, "Maps:  " + strings.Join(names, "     "))
+		} else {
+			discord.ChannelMessageSend(message.ChannelID, "There are no maps in map dir")
+		}
+	
+	case strings.Contains(message.Content, BotPrefix + "rmmap"):
+		successNames, failureNames := removeMaps(message.Content)
+		if len(successNames) > 0 {
+			discord.ChannelMessageSend(message.ChannelID, "Successfully removed:  " + strings.Join(successNames, "     "))
+		}
+		if len(failureNames) > 0 {
+			discord.ChannelMessageSend(message.ChannelID, "Failed to remove:  " + strings.Join(failureNames, "     "))
+		}	
 	}
 }
 
@@ -98,4 +116,45 @@ func downloadMap(attachment *discordgo.MessageAttachment) (bool) {
 		stat = false
 	}
 	return stat
+}
+
+func getMapsList(amount int) ([]string) {
+	folder, err := os.Open(BotMapDir)
+	if err != nil {
+		log.Println("Could not get maps folder")
+	}
+	defer folder.Close()
+
+	names, err := folder.Readdirnames(amount)
+	if err != nil {
+		log.Println("Could not get map names")
+	}
+	for i, name := range names {
+		names[i] = strings.TrimSuffix(name, filepath.Ext(name))
+	}
+
+	return names
+}
+
+func removeMaps(content string) ([]string, []string) {
+	var successNames, failureNames []string
+	content = strings.ReplaceAll(content, BotPrefix + "rmmap", "")
+	names := strings.Fields(content)
+	for _, name := range names {
+		if removeMap(name) {
+			successNames = append(successNames, name)
+		} else {
+			failureNames = append(failureNames, name)
+		}
+	}
+	return successNames, failureNames
+}
+
+func removeMap(name string) (bool) {
+	err := os.Remove(BotMapDir + name + ".map")
+	if err != nil {
+		return false
+	} else {
+		return true
+	}
 }

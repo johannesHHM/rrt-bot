@@ -23,4 +23,6 @@ Source `.env` after making changes to it.
 | Command              | Description                                                   |
 |----------------------|---------------------------------------------------------------|
 | !upmap [map files]   | uploads all given maps to BOT_MAP_DIR                         |
+| !mapls               | lists all maps in BOT_MAP_DIR                                 |
+| !rmap  [map names]   | removes given maps from BOT_MAP_DIR                           |
 | !ping                | pongs                                                         |
