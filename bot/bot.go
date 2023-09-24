@@ -125,6 +125,7 @@ func runHelp(discord *discordgo.Session, message *discordgo.MessageCreate) {
 		"!upmap [map files]   uploads given maps\n" +
 		"!lsmap               lists all maps\n" +
 		"!rmmap [names]       removes maps by names\n" +
+		"!online              lists all online RRT members\n" +
 		"!ping                pongs\n" +
 		"```"
 	discord.ChannelMessageSend(message.ChannelID, helpString)
