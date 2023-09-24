@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"strconv"
 	"strings"
 
 	"github.com/bwmarrin/discordgo"
@@ -49,6 +50,9 @@ func newMessage(discord *discordgo.Session, message *discordgo.MessageCreate) {
 	case checkCommand("rmmap", message):
 		runRmmap(discord, message)
 
+	case checkCommand("online", message):
+		runOnline(discord, message)
+
 	case checkCommand("help", message):
 		runHelp(discord, message)
 
@@ -64,12 +68,16 @@ func checkCommand(command string, message *discordgo.MessageCreate) bool {
 
 func runUpmap(discord *discordgo.Session, message *discordgo.MessageCreate) {
 	if len(message.Attachments) < 1 {
-		discord.ChannelMessageSend(message.ChannelID, "```To uppload a map, include the map as an attachment```")
+		discord.ChannelMessageSend(
+			message.ChannelID,
+			"```To uppload a map, include the map as an attachment```")
 		return
 	}
 	names := downloadMaps(message.Attachments)
 	if len(names) < 1 {
-		discord.ChannelMessageSend(message.ChannelID, "```Failed to upload attachment, is your attachment a map?```")
+		discord.ChannelMessageSend(
+			message.ChannelID,
+			"```Failed to upload attachment, is your attachment a map?```")
 
 	}
 	replyString := "```" +
@@ -82,7 +90,9 @@ func runUpmap(discord *discordgo.Session, message *discordgo.MessageCreate) {
 func runLsmap(discord *discordgo.Session, message *discordgo.MessageCreate) {
 	names := getMapsList(-1)
 	if len(names) < 1 {
-		discord.ChannelMessageSend(message.ChannelID, "```There are no maps in map dir```")
+		discord.ChannelMessageSend(
+			message.ChannelID,
+			"```There are no maps in map dir```")
 	}
 	replyString := "```" +
 		"Maps:\n" +
@@ -112,9 +122,9 @@ func runRmmap(discord *discordgo.Session, message *discordgo.MessageCreate) {
 func runHelp(discord *discordgo.Session, message *discordgo.MessageCreate) {
 	helpString := "```" +
 		"Commands:\n" +
-		"!upmap [map files]   uploads all given maps\n" +
+		"!upmap [map files]   uploads given maps\n" +
 		"!lsmap               lists all maps\n" +
-		"!rmmap [map names]   removes given maps\n" +
+		"!rmmap [names]       removes maps by names\n" +
 		"!ping                pongs\n" +
 		"```"
 	discord.ChannelMessageSend(message.ChannelID, helpString)
@@ -122,4 +132,31 @@ func runHelp(discord *discordgo.Session, message *discordgo.MessageCreate) {
 
 func runPing(discord *discordgo.Session, message *discordgo.MessageCreate) {
 	discord.ChannelMessageSend(message.ChannelID, "```pong!```")
+}
+
+func runOnline(discord *discordgo.Session, message *discordgo.MessageCreate) {
+	err := getServers()
+	if err != nil {
+		log.Println("Timeout from master1.ddnet.org")
+		discord.ChannelMessageSend(
+			message.ChannelID,
+			"```Could not reach master server!```")
+		return
+	}
+	clients := getOnlineByClan("ℜℜͲ")
+	var names []string
+	for _, client := range clients {
+		names = append(names, client.Name)
+	}
+	if len(names) < 1 {
+		discord.ChannelMessageSend(
+			message.ChannelID,
+			"```0 online RRT members```")
+		return
+	}
+	replyString := "```" +
+		strconv.Itoa(len(names)) + " online RRT members:\n" +
+		strings.Join(names, "     ") +
+		"```"
+	discord.ChannelMessageSend(message.ChannelID, replyString)
 }
