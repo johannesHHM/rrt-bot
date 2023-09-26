@@ -7,6 +7,7 @@ import (
 	"os/signal"
 	"strconv"
 	"strings"
+	"unicode"
 
 	"github.com/bwmarrin/discordgo"
 )
@@ -133,6 +134,7 @@ func runHelp(discord *discordgo.Session, message *discordgo.MessageCreate) {
 	helpString := "```" +
 		"Commands:\n" +
 		"-------------------------------------------------\n" +
+		"!help                lists all commands\n" +
 		"!upmap [map files]   uploads given maps\n" +
 		"!lsmap               lists all maps\n" +
 		"!rmmap [names]       removes maps by names\n" +
@@ -189,6 +191,10 @@ func runOnline(discord *discordgo.Session, message *discordgo.MessageCreate) {
 
 func runTranslate(discord *discordgo.Session, message *discordgo.MessageCreate) {
 	result := translateMessage(message.Content)
+	if checkWhitespaceOnly(result.Text) {
+		discord.ChannelMessageSend(message.ChannelID, "```Translation requires a message```")
+		return
+	}
 	replyString := "```" + strings.ToUpper(result.Dest) + ": " + result.Text + "```"
 	discord.ChannelMessageSend(message.ChannelID, replyString)
 }
@@ -213,4 +219,13 @@ func byteCountIEC(b int64) string {
 	}
 	return fmt.Sprintf("%.1f %ciB",
 		float64(b)/float64(div), "KMGTPE"[exp])
+}
+
+func checkWhitespaceOnly(content string) bool {
+	for _, c := range content {
+		if !unicode.IsSpace(c) {
+			return false
+		}
+	}
+	return true
 }
