@@ -88,16 +88,23 @@ func runUpmap(discord *discordgo.Session, message *discordgo.MessageCreate) {
 }
 
 func runLsmap(discord *discordgo.Session, message *discordgo.MessageCreate) {
-	names := getMapsList(-1)
-	if len(names) < 1 {
+	mapInfos := getMapsList()
+	if len(mapInfos) < 1 {
 		discord.ChannelMessageSend(
 			message.ChannelID,
 			"```There are no maps in map dir```")
 	}
-	replyString := "```" +
-		"Maps:\n" +
-		strings.Join(names, "     ") +
-		"```"
+	replyString := "```Maps:\n"
+	for _, mapInfo := range mapInfos {
+		lineString := mapInfo.Name()
+		lineString = rightPad(lineString, 24)
+		lineString += byteCountIEC(mapInfo.Size()) + " "
+		lineString = rightPad(lineString, 36)
+		lineString += mapInfo.ModTime().Format("Jan 2 15:04") + "\n"
+		replyString += lineString
+	}
+	replyString += "```"
+	
 	discord.ChannelMessageSend(message.ChannelID, replyString)
 }
 
@@ -133,7 +140,6 @@ func runHelp(discord *discordgo.Session, message *discordgo.MessageCreate) {
 
 func runPing(discord *discordgo.Session, message *discordgo.MessageCreate) {
 	discord.ChannelMessageSend(message.ChannelID, "```pong!```")
-	discord.ChannelMessageSend(message.ChannelID, "```123456789x123456789x123456789x123456789x123456789x123456789x123456789```")
 }
 
 func runOnline(discord *discordgo.Session, message *discordgo.MessageCreate) {
@@ -177,4 +183,18 @@ func rightPad(string string, length int) (paddedString string) {
 		return string
 	}
 	return string + strings.Repeat(" ", neededPad)
+}
+
+func byteCountIEC(b int64) string {
+	const unit = 1024
+	if b < unit {
+		return fmt.Sprintf("%d B", b)
+	}
+	div, exp := int64(unit), 0
+	for n := b / unit; n >= unit; n /= unit {
+		div *= unit
+		exp++
+	}
+	return fmt.Sprintf("%.1f %ciB",
+		float64(b)/float64(div), "KMGTPE"[exp])
 }

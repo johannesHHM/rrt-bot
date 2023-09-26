@@ -52,22 +52,19 @@ func downloadMap(attachment *discordgo.MessageAttachment) bool {
 	return stat
 }
 
-func getMapsList(amount int) []string {
-	folder, err := os.Open(BotMapDir)
+func getMapsList() (mapInfos []os.FileInfo) {
+	entries, err := os.ReadDir(BotMapDir)
 	if err != nil {
-		log.Println("Could not get maps folder")
+		log.Println("Could not read maps folder")
 	}
-	defer folder.Close()
-
-	names, err := folder.Readdirnames(amount)
-	if err != nil {
-		log.Println("Could not get map names")
+	for _, entry := range entries {
+		mapInfo, err := entry.Info()
+		if err != nil {
+			log.Println("Failed to get mapInfo")
+		}
+		mapInfos = append(mapInfos, mapInfo)
 	}
-	for i, name := range names {
-		names[i] = strings.TrimSuffix(name, filepath.Ext(name))
-	}
-
-	return names
+	return mapInfos
 }
 
 func removeMaps(content string) ([]string, []string) {
