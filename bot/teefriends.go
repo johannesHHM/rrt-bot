@@ -73,14 +73,14 @@ func getOnlineByClan(clan string) (clients []Client, servrs []Server) {
 		for _, client := range server.Info.Clients {
 			if client.Clan == clan {
 				clients = append(clients, client)
-				servrs = append(servrs, server)	
+				servrs = append(servrs, server)
 			}
 		}
 	}
 	return clients, servrs
 }
 
-func getServerShortName(server Server) (string) {
+func getServerShortName(server Server) string {
 	if strings.HasPrefix(server.Info.Name, "DDNet") {
 		return firstWords(server.Info.Name, 0, 2)
 	}
@@ -107,8 +107,8 @@ func getServerShortName(server Server) (string) {
 	}
 }
 
-func firstWords(value string, skip int, count int) (string) {
-	startPos := 0	
+func firstWords(value string, skip int, count int) string {
+	startPos := 0
 	for i := range value {
 		if skip == 0 {
 			startPos = i
@@ -119,10 +119,10 @@ func firstWords(value string, skip int, count int) (string) {
 		}
 	}
 	for i := range value {
-		if value[startPos + i] == ' ' {
+		if value[startPos+i] == ' ' {
 			count -= 1
 			if count == 0 {
-				return value[startPos:startPos + i]
+				return value[startPos : startPos+i]
 			}
 		}
 	}

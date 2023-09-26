@@ -1,3 +1,5 @@
+github.com/Conight/go-googletrans v0.2.4 h1:5+Iq8arEWtjJ8sfI4qGN2V8n/kwott164Zk7aUErC5Y=
+github.com/Conight/go-googletrans v0.2.4/go.mod h1:vl4tB0jWplJ1ZsEul86jXSMUrM+llD1qHK2XbjVBwvk=
 github.com/bwmarrin/discordgo v0.27.1 h1:ib9AIc/dom1E/fSIulrBwnez0CToJE113ZGt4HoliGY=
 github.com/bwmarrin/discordgo v0.27.1/go.mod h1:NJZpH+1AfhIcyQsPeuBKsUtYrRnjkyu0kIVMCHkZtRY=
 github.com/gorilla/websocket v1.4.2 h1:+/TMaTYc4QFitKJxsQ7Yye35DkWvkdLcvGKqM+x0Ufc=

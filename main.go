@@ -27,5 +27,6 @@ func main() {
 	bot.BotMapDir = botMapDir
 	bot.BotPrefix = botPrefix
 	bot.URLHttpMaster = botURLHTTPMaster
+	bot.BotTranslatePrefix = ':'
 	bot.Run()
 }

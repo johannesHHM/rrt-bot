@@ -53,6 +53,9 @@ func newMessage(discord *discordgo.Session, message *discordgo.MessageCreate) {
 	case checkCommand("online", message):
 		runOnline(discord, message)
 
+	case checkCommand("gt", message):
+		runTranslate(discord, message)
+
 	case checkCommand("help", message):
 		runHelp(discord, message)
 
@@ -94,7 +97,7 @@ func runLsmap(discord *discordgo.Session, message *discordgo.MessageCreate) {
 			message.ChannelID,
 			"```There are no maps in map dir```")
 	}
-	replyString := "```Maps:\n"
+	replyString := "```Maps:\n------------------------------------------------\n"
 	for _, mapInfo := range mapInfos {
 		lineString := mapInfo.Name()
 		lineString = rightPad(lineString, 24)
@@ -104,7 +107,7 @@ func runLsmap(discord *discordgo.Session, message *discordgo.MessageCreate) {
 		replyString += lineString
 	}
 	replyString += "```"
-	
+
 	discord.ChannelMessageSend(message.ChannelID, replyString)
 }
 
@@ -129,10 +132,12 @@ func runRmmap(discord *discordgo.Session, message *discordgo.MessageCreate) {
 func runHelp(discord *discordgo.Session, message *discordgo.MessageCreate) {
 	helpString := "```" +
 		"Commands:\n" +
+		"-------------------------------------------------\n" +
 		"!upmap [map files]   uploads given maps\n" +
 		"!lsmap               lists all maps\n" +
 		"!rmmap [names]       removes maps by names\n" +
 		"!online              lists all online RRT members\n" +
+		"!gt [msg] :[code]    translates message\n" +
 		"!ping                pongs\n" +
 		"```"
 	discord.ChannelMessageSend(message.ChannelID, helpString)
@@ -160,7 +165,8 @@ func runOnline(discord *discordgo.Session, message *discordgo.MessageCreate) {
 		return
 	}
 
-	replyString := "```" + strconv.Itoa(len(clients)) + " online RRT members:\n"
+	replyString := "```" + strconv.Itoa(len(clients)) + " online RRT members:\n" +
+		"-----------------------------------------------\n"
 
 	for i, client := range clients {
 		lineString := client.Name
@@ -169,11 +175,21 @@ func runOnline(discord *discordgo.Session, message *discordgo.MessageCreate) {
 		}
 		lineString = rightPad(lineString, 21)
 		lineString += " " + getServerShortName(servers[i])
-		lineString += " (" + strconv.Itoa(len(servers[i].Info.Clients)) + "/" + strconv.Itoa(servers[i].Info.MaxClients) + ")"
+		lineString += " (" +
+			strconv.Itoa(len(servers[i].Info.Clients)) +
+			"/" +
+			strconv.Itoa(servers[i].Info.MaxClients) +
+			")"
 		replyString += lineString + "\n"
 	}
 	replyString += "```"
 
+	discord.ChannelMessageSend(message.ChannelID, replyString)
+}
+
+func runTranslate(discord *discordgo.Session, message *discordgo.MessageCreate) {
+	result := translateMessage(message.Content)
+	replyString := "```" + strings.ToUpper(result.Dest) + ": " + result.Text + "```"
 	discord.ChannelMessageSend(message.ChannelID, replyString)
 }
 
