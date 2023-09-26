@@ -133,6 +133,7 @@ func runHelp(discord *discordgo.Session, message *discordgo.MessageCreate) {
 
 func runPing(discord *discordgo.Session, message *discordgo.MessageCreate) {
 	discord.ChannelMessageSend(message.ChannelID, "```pong!```")
+	discord.ChannelMessageSend(message.ChannelID, "```123456789x123456789x123456789x123456789x123456789x123456789x123456789```")
 }
 
 func runOnline(discord *discordgo.Session, message *discordgo.MessageCreate) {
@@ -144,20 +145,36 @@ func runOnline(discord *discordgo.Session, message *discordgo.MessageCreate) {
 			"```Could not reach master server!```")
 		return
 	}
-	clients := getOnlineByClan("ℜℜͲ")
-	var names []string
-	for _, client := range clients {
-		names = append(names, client.Name)
-	}
-	if len(names) < 1 {
+	clients, servers := getOnlineByClan("ℜℜͲ")
+
+	if len(clients) < 1 {
 		discord.ChannelMessageSend(
 			message.ChannelID,
 			"```0 online RRT members```")
 		return
 	}
-	replyString := "```" +
-		strconv.Itoa(len(names)) + " online RRT members:\n" +
-		strings.Join(names, "     ") +
-		"```"
+
+	replyString := "```" + strconv.Itoa(len(clients)) + " online RRT members:\n"
+
+	for i, client := range clients {
+		lineString := client.Name
+		if client.AFK {
+			lineString += " (AFK)"
+		}
+		lineString = rightPad(lineString, 21)
+		lineString += " " + getServerShortName(servers[i])
+		lineString += " (" + strconv.Itoa(len(servers[i].Info.Clients)) + "/" + strconv.Itoa(servers[i].Info.MaxClients) + ")"
+		replyString += lineString + "\n"
+	}
+	replyString += "```"
+
 	discord.ChannelMessageSend(message.ChannelID, replyString)
+}
+
+func rightPad(string string, length int) (paddedString string) {
+	neededPad := length - len(string)
+	if neededPad < 1 {
+		return string
+	}
+	return string + strings.Repeat(" ", neededPad)
 }
