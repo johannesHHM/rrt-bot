@@ -28,5 +28,5 @@ Source `.env` after making changes to it.
 | ``!lsmap``               | lists all maps in BOT_MAP_DIR                                 |
 | ``!rmmap [map names]``   | removes given maps from BOT_MAP_DIR                           |
 | ``!online``              | lists all online RRT members                                  |
-| ``!gt [message] :[code]``| translates message too given language                         |
+| ``!gt [message] :[code]``| translates message to given language                         |
 | ``!ping``                | pongs                                                         |
