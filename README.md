@@ -7,7 +7,6 @@ git clone https://github.com/johannesHHM/rrt-bot
 cd rrt-bot
 go run main.go
 ```
-Note: rrt-bot/ must be in your GOPATH
 
 ## Config
 The bot is configured using environment variables.
@@ -28,5 +27,5 @@ Source `.env` after making changes to it.
 | ``!lsmap``               | lists all maps in BOT_MAP_DIR                                 |
 | ``!rmmap [map names]``   | removes given maps from BOT_MAP_DIR                           |
 | ``!online``              | lists all online RRT members                                  |
-| ``!gt [message] :[code]``| translates message to given language                         |
+| ``!gt [message] :[code]``| translates message to given language                          |
 | ``!ping``                | pongs                                                         |

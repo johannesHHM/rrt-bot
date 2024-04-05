@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"rrt-bot/bot"
 	"strconv"
 	"strings"
 	"unicode"
@@ -82,7 +83,6 @@ func runUpmap(discord *discordgo.Session, message *discordgo.MessageCreate) {
 		discord.ChannelMessageSend(
 			message.ChannelID,
 			"```Failed to upload attachment, is your attachment a map?```")
-
 	}
 	replyString := "```" +
 		"Successfully uploaded:\n" +
@@ -100,12 +100,14 @@ func runLsmap(discord *discordgo.Session, message *discordgo.MessageCreate) {
 	} else {
 		replyString := "```Maps:\n------------------------------------------------\n"
 		for _, mapInfo := range mapInfos {
-			lineString := mapInfo.Name()
-			lineString = rightPad(lineString, 24)
-			lineString += byteCountIEC(mapInfo.Size()) + " "
-			lineString = rightPad(lineString, 36)
-			lineString += mapInfo.ModTime().Format("Jan 2 15:04") + "\n"
-			replyString += lineString
+			if !mapInfo.IsDir() {
+				lineString := mapInfo.Name()
+				lineString = rightPad(lineString, 24)
+				lineString += byteCountIEC(mapInfo.Size()) + " "
+				lineString = rightPad(lineString, 36)
+				lineString += mapInfo.ModTime().Format("Jan 2 15:04") + "\n"
+				replyString += lineString
+			}
 		}
 		replyString += "```"
 
@@ -153,7 +155,7 @@ func runPing(discord *discordgo.Session, message *discordgo.MessageCreate) {
 func runOnline(discord *discordgo.Session, message *discordgo.MessageCreate) {
 	err := getServers()
 	if err != nil {
-		log.Println("Timeout from master1.ddnet.org")
+		log.Println("Timeout from '" + bot.URLHttpMaster + "'")
 		discord.ChannelMessageSend(
 			message.ChannelID,
 			"```Could not reach master server!```")
