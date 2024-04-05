@@ -5,7 +5,6 @@ import (
 	"log"
 	"os"
 	"os/signal"
-	"rrt-bot/bot"
 	"strconv"
 	"strings"
 	"unicode"
@@ -83,6 +82,7 @@ func runUpmap(discord *discordgo.Session, message *discordgo.MessageCreate) {
 		discord.ChannelMessageSend(
 			message.ChannelID,
 			"```Failed to upload attachment, is your attachment a map?```")
+
 	}
 	replyString := "```" +
 		"Successfully uploaded:\n" +
@@ -155,7 +155,7 @@ func runPing(discord *discordgo.Session, message *discordgo.MessageCreate) {
 func runOnline(discord *discordgo.Session, message *discordgo.MessageCreate) {
 	err := getServers()
 	if err != nil {
-		log.Println("Timeout from '" + bot.URLHttpMaster + "'")
+		log.Println("Timeout from master server")
 		discord.ChannelMessageSend(
 			message.ChannelID,
 			"```Could not reach master server!```")
