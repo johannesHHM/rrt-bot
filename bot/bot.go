@@ -138,7 +138,7 @@ func runHelp(discord *discordgo.Session, message *discordgo.MessageCreate) {
 		"Commands:\n" +
 		"-------------------------------------------------\n" +
 		"!help                lists all commands\n" +
-		"!upmap [map files]   uploads given maps\n" +
+		"!upmap [map files]    uploads given maps\n" +
 		"!lsmap               lists all maps\n" +
 		"!rmmap [names]       removes maps by names\n" +
 		"!online              lists all online RRT members\n" +
