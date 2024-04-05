@@ -97,19 +97,20 @@ func runLsmap(discord *discordgo.Session, message *discordgo.MessageCreate) {
 		discord.ChannelMessageSend(
 			message.ChannelID,
 			"```There are no maps in map dir```")
-	}
-	replyString := "```Maps:\n------------------------------------------------\n"
-	for _, mapInfo := range mapInfos {
-		lineString := mapInfo.Name()
-		lineString = rightPad(lineString, 24)
-		lineString += byteCountIEC(mapInfo.Size()) + " "
-		lineString = rightPad(lineString, 36)
-		lineString += mapInfo.ModTime().Format("Jan 2 15:04") + "\n"
-		replyString += lineString
-	}
-	replyString += "```"
+	} else {
+		replyString := "```Maps:\n------------------------------------------------\n"
+		for _, mapInfo := range mapInfos {
+			lineString := mapInfo.Name()
+			lineString = rightPad(lineString, 24)
+			lineString += byteCountIEC(mapInfo.Size()) + " "
+			lineString = rightPad(lineString, 36)
+			lineString += mapInfo.ModTime().Format("Jan 2 15:04") + "\n"
+			replyString += lineString
+		}
+		replyString += "```"
 
-	discord.ChannelMessageSend(message.ChannelID, replyString)
+		discord.ChannelMessageSend(message.ChannelID, replyString)
+	}
 }
 
 func runRmmap(discord *discordgo.Session, message *discordgo.MessageCreate) {
